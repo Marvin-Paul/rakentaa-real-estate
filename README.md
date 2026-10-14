@@ -2,6 +2,10 @@
 
 Responsive corporate website built with React, Vite, Tailwind CSS and Lucide icons. Company copy is based on the supplied Rakentaa company profile. Architectural photographs are illustrative, not claims of completed Rakentaa projects.
 
+Private hosted preview: https://rakentaa-real-estate.perkyfinch32.chatgpt.site
+
+The original company profile is retained in `docs/company-profile.md` for future content updates.
+
 ## Run locally
 
 Use Node.js 20.19+ or 22.12+. Run `npm install`, then `npm run dev`. For a production bundle, run `npm run build`; `npm run preview` serves that bundle.
