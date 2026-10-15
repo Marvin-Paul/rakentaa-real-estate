@@ -1,0 +1,209 @@
+{
+  "hero": {
+    "eyebrow": "PROPERTY. CONSTRUCTION. DESIGN.",
+    "title": "You dream it.",
+    "highlight": "We build it.",
+    "description": "Full-service property development, architecture, construction and management. One team. Every stage.",
+    "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2400&q=90"
+  },
+  "about": {
+    "title": "One vision.\nOne accountable team.",
+    "lead": "A property is more than a building.\nIt is the beginning of something bigger.",
+    "description": "Rakentaa Real Estate brings architects, quantity surveyors, project managers, valuers and skilled site teams under one roof. From the first sketch to the final coat of paint, we bring your ambitions to life.",
+    "secondary": "Whether it is a family home, a commercial development or an existing property portfolio, you have one partner who sees the whole picture.",
+    "mission": "To turn your property ambitions into safe, well-designed and durable realities — delivered on time, within budget and to the highest standard of workmanship, anywhere.",
+    "vision": "To be the most trusted name in real estate development and construction management in the region.",
+    "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1000&q=85",
+    "imageAlt": "Light-filled contemporary interior with natural materials"
+  },
+  "contact": {
+    "phone": "+256 704 057 507",
+    "location": "Kampala, Uganda",
+    "heading": "Your next chapter\nstarts here.",
+    "intro": "A new home. A better space. A sound investment.\nTell us what you have in mind — we’re ready to listen."
+  },
+  "services": [
+    {
+      "name": "Property Management",
+      "summary": "Your property. Professionally cared for.",
+      "description": "Protect your asset, keep tenants satisfied, and keep income flowing with hands-on oversight of your residential or commercial property.",
+      "details": [
+        "Tenant sourcing, vetting and lease administration",
+        "Rent collection and financial reporting",
+        "Routine maintenance and emergency repair coordination",
+        "Property inspections and condition reporting",
+        "Tenancy compliance and utility coordination"
+      ]
+    },
+    {
+      "name": "Construction Project Management",
+      "summary": "Clarity and control at every milestone.",
+      "description": "An independent partner who represents your interests and keeps your budget, schedule, contractors and quality working together.",
+      "details": [
+        "Budget control and payment certification",
+        "Schedule development and progress tracking",
+        "Contractor and supplier procurement",
+        "Site quality inspections and defects management",
+        "Risk reporting and stakeholder communication"
+      ]
+    },
+    {
+      "name": "Construction Services",
+      "summary": "From groundbreaking to the final detail.",
+      "description": "Bring approved drawings to life with coordinated site teams, careful workmanship and a disciplined approach to site safety.",
+      "details": [
+        "Site clearance, setting-out and groundworks",
+        "Foundations, structural framing and shell construction",
+        "Roofing, walling, plastering and finishes",
+        "Mechanical, electrical and plumbing coordination",
+        "Final finishes, snagging and handover"
+      ]
+    },
+    {
+      "name": "Renovation",
+      "summary": "A new chapter for an existing space.",
+      "description": "Remodel, restore and improve your property with considered layouts, structural repairs and finishes built around how you live and work.",
+      "details": [
+        "Structural assessments and repairs",
+        "Interior and exterior remodelling",
+        "Kitchen, bathroom and living-space upgrades",
+        "Extensions, conversions and additional floors",
+        "Heritage and neglected-property restoration"
+      ]
+    },
+    {
+      "name": "Architectural Drawings",
+      "summary": "Every great building starts with a clear plan.",
+      "description": "Translate your brief and budget into thoughtful concepts and detailed, permit-ready drawings for a confident start.",
+      "details": [
+        "Concept design and 3D visualisation",
+        "Architectural and structural working drawings",
+        "Floor plans, elevations, sections and site plans",
+        "Local authority approval and permit drawings",
+        "Collaborative revisions through to sign-off"
+      ]
+    },
+    {
+      "name": "Property Valuation",
+      "summary": "Understand the true value of your property.",
+      "description": "Make informed decisions with independent, professionally reasoned valuations tailored to the purpose you need them for.",
+      "details": [
+        "Market valuations for buying, selling and investment",
+        "Mortgage and loan-security valuations",
+        "Insurance and replacement-cost valuations",
+        "Estate planning, taxation and dispute valuations",
+        "Reports supported by comparable market evidence"
+      ]
+    }
+  ],
+  "steps": [
+    [
+      "Consultation & briefing",
+      "We listen first. Your budget, site, purpose and timeline set the direction."
+    ],
+    [
+      "Design & planning",
+      "Drawings, structural input and cost estimates turn your brief into a clear plan."
+    ],
+    [
+      "Approvals & procurement",
+      "Permits, vetted contractors and the right materials lay the groundwork."
+    ],
+    [
+      "Construction & execution",
+      "Continuous site management keeps work moving, with regular updates for you."
+    ],
+    [
+      "Quality control & handover",
+      "Inspections, snagging and final sign-off bring every detail into focus."
+    ],
+    [
+      "Ongoing management",
+      "Our relationship can continue with care that protects your finished asset."
+    ]
+  ],
+  "inspirations": [
+    {
+      "title": "A home that feels like you.",
+      "category": "Residential",
+      "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=85",
+      "alt": "Contemporary home with a landscaped garden and warm interior lighting",
+      "description": "Thoughtful layouts. Natural light. Room to grow.",
+      "service": "Architectural Drawings"
+    },
+    {
+      "title": "Space for better business.",
+      "category": "Commercial",
+      "image": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85",
+      "alt": "Bright contemporary office with shared working spaces",
+      "description": "Places designed around people and the way they work.",
+      "service": "Construction Project Management"
+    },
+    {
+      "title": "A fresh perspective.",
+      "category": "Renovation",
+      "image": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=85",
+      "alt": "Living room with neutral furnishings and large windows",
+      "description": "Reimagine the space you already call your own.",
+      "service": "Renovation"
+    }
+  ],
+  "guides": [
+    {
+      "tag": "BUILDING & DESIGN",
+      "title": "Before you break ground",
+      "intro": "A clear brief makes a stronger starting point.",
+      "points": [
+        "Describe how the property needs to work for you, now and in the future.",
+        "Bring your site location, available drawings and any existing site information.",
+        "Outline your budget range and preferred timeline so priorities can be discussed early."
+      ]
+    },
+    {
+      "tag": "PROPERTY MANAGEMENT",
+      "title": "A property that works for you",
+      "intro": "Know what you want from a management partner.",
+      "points": [
+        "List your properties, their occupancy and any maintenance concerns.",
+        "Bring existing tenancy records and explain how rent is currently collected.",
+        "Discuss the reporting, inspection and communication arrangements you need."
+      ]
+    },
+    {
+      "tag": "RENOVATION",
+      "title": "See the potential in your space",
+      "intro": "Start with what needs to change and why.",
+      "points": [
+        "Identify the spaces that are not working and the improvements that matter most.",
+        "Gather photos, existing plans and details of known structural or maintenance issues.",
+        "Explain whether the property will remain occupied while work is carried out."
+      ]
+    }
+  ],
+  "faqs": [
+    [
+      "Can I engage Rakentaa for just one service?",
+      "Yes. Each of our six core services can be commissioned independently, or combined into an end-to-end arrangement. Tell us where you are in your project and we can discuss an appropriate scope."
+    ],
+    [
+      "I already have drawings or a contractor. Can you still help?",
+      "Yes. Our construction project management service supports clients who already have designs or a contractor and need independent coordination of budgets, schedules and quality."
+    ],
+    [
+      "How is the cost of my project determined?",
+      "We begin with your brief, location, scope and timeline. Design requirements, materials and site conditions inform the cost discussion. A project-specific budget and scope should be agreed before work begins."
+    ],
+    [
+      "Do you only work in Kampala?",
+      "We are based in Kampala and are set up to mobilise to other locations. Share your project location so we can discuss access, logistics and the services required."
+    ],
+    [
+      "What should I prepare for a first conversation?",
+      "Bring your project location, objectives, approximate budget and preferred timeline. Existing drawings, site photographs and property records are helpful where available. It is fine to start with an idea."
+    ],
+    [
+      "What happens when I submit the appointment form?",
+      "The form prepares a project brief that you can send to our team through WhatsApp. You review and confirm sending in WhatsApp. You can also call us directly to discuss an appointment."
+    ]
+  ]
+}

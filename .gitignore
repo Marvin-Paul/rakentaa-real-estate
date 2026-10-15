@@ -4,3 +4,7 @@ dist/
 .sites/
 *.tar.gz
 .sites-tools/
+data/
+.env
+.env.*
+!.env.example
