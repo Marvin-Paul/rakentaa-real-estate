@@ -4,7 +4,7 @@ import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import defaults from '../src/default-content.json' with { type: 'json' };
-import { validateContent } from '../src/content-schema.js';
+import { validateContent, withContentDefaults } from '../src/content-schema.js';
 
 const scrypt = promisify(deriveKey);
 const projectRoot = fileURLToPath(new URL('../', import.meta.url));
@@ -34,7 +34,7 @@ export function createCms({ dataDir = process.env.CMS_DATA_DIR || path.join(proj
     await rename(temp, target);
   }
   const initial = () => ({ revision: 0, draft: defaults, published: defaults, savedAt: null, publishedAt: null });
-  const store = () => read('content.json', initial());
+  const store = async () => { const record = await read('content.json', initial()); return { ...record, draft: withContentDefaults(record.draft), published: withContentDefaults(record.published) }; };
   const user = () => read('admin.json', null);
   const cookie = (token, expired = false) => `rakentaa_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${expired ? 0 : SESSION_AGE / 1000}${secureCookie ? '; Secure' : ''}`;
   const sessionFor = req => {

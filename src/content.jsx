@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import defaults from './default-content.json';
-import { validateContent } from './content-schema.js';
+import { validateContent, withContentDefaults } from './content-schema.js';
 
 export const ContentContext = createContext(defaults);
 export const useContent = () => useContext(ContentContext);
@@ -18,7 +18,7 @@ export function ContentProvider({ children }) {
         const data = await response.json();
         const next = preview ? data.draft : data.content;
         if (validateContent(next)) throw new Error('Saved content could not be loaded. Showing the original website.');
-        setContent(next);
+        setContent(withContentDefaults(next));
       } catch (failure) {
         if (failure.name !== 'AbortError') { setError(failure.message); setContent(defaults); }
       }

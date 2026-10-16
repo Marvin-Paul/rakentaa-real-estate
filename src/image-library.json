@@ -1,0 +1,72 @@
+[
+  {
+    "image": "/images/architectural-concept.jpeg",
+    "title": "From drawing to possibility",
+    "alt": "A contemporary home model displayed on architectural drawings.",
+    "width": 736,
+    "height": 981
+  },
+  {
+    "image": "/images/construction-overview.jpeg",
+    "title": "Built on a clear plan",
+    "alt": "Hard hat and rolled drawings overlooking a construction site.",
+    "width": 735,
+    "height": 490
+  },
+  {
+    "image": "/images/kitchen-renovation.jpeg",
+    "title": "A kitchen reimagined",
+    "alt": "Side-by-side kitchen renovation inspiration, before and after.",
+    "width": 736,
+    "height": 736
+  },
+  {
+    "image": "/images/modern-residence.jpeg",
+    "title": "A place to call your own",
+    "alt": "Contemporary two-storey residence with a balcony and landscaped entrance.",
+    "width": 736,
+    "height": 1104
+  },
+  {
+    "image": "/images/architectural-blueprint.jpeg",
+    "title": "Every detail considered",
+    "alt": "Detailed architectural floor plan with room layouts and dimensions.",
+    "width": 583,
+    "height": 900
+  },
+  {
+    "image": "/images/residential-construction.jpeg",
+    "title": "Progress on the ground",
+    "alt": "Construction workers building block walls at a residential site.",
+    "width": 736,
+    "height": 552
+  },
+  {
+    "image": "/images/interior-transformation.jpeg",
+    "title": "New life for an existing space",
+    "alt": "Stacked before-and-after interior images showing a kitchen transformation.",
+    "width": 736,
+    "height": 1104
+  },
+  {
+    "image": "/images/design-visualisation.jpeg",
+    "title": "See the vision take shape",
+    "alt": "Architectural drawing blending into a modern house visualisation.",
+    "width": 736,
+    "height": 736
+  },
+  {
+    "image": "/images/site-planning.jpeg",
+    "title": "One team. One direction.",
+    "alt": "Four professionals in high-visibility vests reviewing drawings on a construction site.",
+    "width": 735,
+    "height": 919
+  },
+  {
+    "image": "/images/kiggundu-isaac.jpeg",
+    "title": "Kiggundu Isaac - Director",
+    "alt": "Portrait of Kiggundu Isaac in a Rakentaa Real Estate shirt",
+    "width": 842,
+    "height": 1264
+  }
+]

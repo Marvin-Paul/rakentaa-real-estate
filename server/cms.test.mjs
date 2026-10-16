@@ -51,6 +51,13 @@ test('CMS authentication, draft isolation, publish, persistence, and public rend
   edited.about.description = 'The company story was edited in the CMS.';
   edited.guides[0].title = 'A new planning guide title';
   edited.steps[0][0] = 'A new process step';
+  edited.services[2].image = '/images/residential-construction.jpeg';
+  edited.services[2].imageAlt = 'CMS service image';
+  edited.services[2].imageFit = 'cover';
+  edited.gallerySettings = { speed: 24, autoplay: false };
+  edited.companyPages['/our-team'].people[0].name = 'CMS team member';
+  edited.companyPages['/our-partners'].headline = 'CMS partnership headline';
+  edited.companyPages['/our-clients'].intro = 'CMS client introduction';
   const saved = await request('/api/admin/content', { method: 'PUT', body: { revision: state.revision, content: edited } });
   assert.equal(saved.status, 200);
   assert.equal((await request('/api/content', { authenticated: false })).data.content.hero.title, defaults.hero.title);
@@ -71,13 +78,18 @@ test('CMS authentication, draft isolation, publish, persistence, and public rend
 
   // Render the actual public React tree against the content returned by the live API.
   const project = fileURLToPath(new URL('../', import.meta.url));
-  const source = (await readFile(path.join(project, 'src/main.jsx'), 'utf8')).replace(/createRoot\(document\.getElementById\('root'\)\)\.render\([\s\S]*$/, 'export { App, ContentContext };').replace('ContentProvider, useContent', 'ContentProvider, useContent, ContentContext');
+  const source = (await readFile(path.join(project, 'src/main.jsx'), 'utf8')).replace(/createRoot\(document\.getElementById\('root'\)\)\.render\([\s\S]*$/, 'export { App, ContentContext, CompanyPage, companyPages }; export { ContentEditor } from "./Admin.jsx";').replace('ContentProvider, useContent', 'ContentProvider, useContent, ContentContext');
   const bundle = path.join(project, 'node_modules', `.cms-render-test-${Date.now()}.mjs`);
   const output = await build({ stdin: { contents: source, loader: 'jsx', resolveDir: path.join(project, 'src') }, bundle: true, platform: 'node', format: 'esm', packages: 'external', loader: { '.css': 'empty' }, write: false });
   await writeFile(bundle, output.outputFiles[0].text);
   try {
-    const { App, ContentContext } = await import(pathToFileURL(bundle).href);
+    const { App, ContentContext, CompanyPage, companyPages, ContentEditor } = await import(pathToFileURL(bundle).href);
     const markup = renderToStaticMarkup(React.createElement(ContentContext.Provider, { value: publicContent }, React.createElement(App)));
+    for (const [section, expected] of [['services', 'Service header image'], ['inspirations', 'Choose from image library'], ['gallerySettings', 'Scrolling speed'], ['team', 'CMS team member'], ['partners', 'CMS partnership headline'], ['clients', 'CMS client introduction']]) {
+      const adminMarkup = renderToStaticMarkup(React.createElement(ContentEditor, { section, draft: publicContent, setDraft: () => {} }));
+      assert.ok(adminMarkup.includes(expected), `Admin section ${section} should display ${expected}`);
+      assert.equal(adminMarkup.includes('Image unavailable.'), false);
+    }
     assert.ok(markup.includes(edited.hero.title));
     assert.ok(markup.includes('tel:+256700123456'));
     assert.ok(markup.includes('https://wa.me/256700123456'));
@@ -87,6 +99,25 @@ test('CMS authentication, draft isolation, publish, persistence, and public rend
     assert.ok(markup.includes(edited.guides[0].title));
     assert.ok(markup.includes(edited.steps[0][0]));
     assert.ok(markup.includes('href="/admin"'));
+    assert.ok(markup.includes('Scrolling image gallery'));
+    assert.ok(markup.includes('Play gallery'));
+    assert.ok(markup.includes('alt="CMS service image"'));
+    assert.ok(markup.includes('object-fit:cover'));
+    assert.ok(markup.includes('Steady'));
+    for (const [route, page] of Object.entries(companyPages)) {
+      assert.ok(markup.includes(`href="${route}"`));
+      const pageMarkup = renderToStaticMarkup(React.createElement(CompanyPage, { page }));
+      assert.ok(pageMarkup.includes(page.title));
+      const livePage = publicContent.companyPages[route];
+      const livePageMarkup = renderToStaticMarkup(React.createElement(ContentContext.Provider, { value: publicContent }, React.createElement(CompanyPage, { page })));
+      assert.ok(livePageMarkup.includes(livePage.intro));
+      for (const person of livePage.people || []) assert.ok(livePageMarkup.includes(person.name));
+      assert.ok(pageMarkup.includes('href="/#contact"'));
+      for (const person of page.people || []) {
+        assert.ok(pageMarkup.includes(person.name));
+        assert.ok(pageMarkup.includes(person.role));
+      }
+    }
   } finally { await rm(bundle, { force: true }); }
   assert.equal((await request('/api/admin/logout', { method: 'POST', body: {} })).status, 200);
   assert.equal((await request('/api/admin/content')).status, 401);
@@ -106,4 +137,52 @@ test('Setup token protection and login throttling', async t => {
   assert.match(setup.headers.get('set-cookie'), /; Secure/);
   for (let i = 0; i < 3; i++) assert.equal((await post('login', { username: 'owner', password: 'incorrect' })).status, 401);
   assert.equal((await post('login', { username: 'owner', password: 'incorrect' })).status, 429);
+});
+
+test('Gallery accepts bundled images while rejecting unsafe image paths', () => {
+  assert.equal(validateContent(defaults), null);
+  for (const image of ['/images/../data/admin.json', '//example.com/image.jpeg', '/images/test.svg', '/images/test.jpeg?x=1', 'javascript:alert(1)', 'http://example.com/image.jpeg']) {
+    const content = structuredClone(defaults);
+    content.inspirations[0].image = image;
+    assert.ok(validateContent(content), `Should reject ${image}`);
+  }
+  const remote = structuredClone(defaults);
+  remote.inspirations[0].image = 'https://example.com/image.jpeg';
+  assert.equal(validateContent(remote), null);
+});
+
+
+test('Older saved records receive new admin controls without losing published edits', async t => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), 'rakentaa-legacy-'));
+  const legacy = structuredClone(defaults);
+  delete legacy.companyPages;
+  delete legacy.gallerySettings;
+  legacy.services.forEach(service => { delete service.image; delete service.imageAlt; delete service.imageFit; delete service.imagePosition; });
+  legacy.hero.title = 'Retained published title';
+  const record = { revision: 7, draft: legacy, published: legacy, savedAt: '2026-10-01T00:00:00Z', publishedAt: '2026-10-02T00:00:00Z' };
+  await writeFile(path.join(dataDir, 'content.json'), JSON.stringify(record));
+  const app = await serve({ dataDir });
+  t.after(async () => { await app.close(); await rm(dataDir, { recursive: true, force: true }); });
+  const live = await (await fetch(app.base + '/api/content')).json();
+  assert.equal(live.revision, 7);
+  assert.equal(live.publishedAt, record.publishedAt);
+  assert.equal(live.content.hero.title, legacy.hero.title);
+  assert.equal(live.content.services[0].image, defaults.services[0].image);
+  assert.equal(live.content.companyPages['/our-team'].people[0].name, 'Kiggundu Isaac');
+  assert.equal(validateContent(live.content), null);
+  assert.deepEqual(JSON.parse(await readFile(path.join(dataDir, 'content.json'), 'utf8')), record);
+});
+
+test('New admin fields reject unsafe images, invalid playback and incomplete page content', () => {
+  for (const change of [
+    content => { content.services[0].image = 'javascript:alert(1)'; },
+    content => { content.services[0].imagePosition = 'url(https://example.com)'; },
+    content => { content.gallerySettings.speed = 0; },
+    content => { content.companyPages['/our-team'].people[0].image = '//example.com/portrait.png'; },
+    content => { content.companyPages['/our-clients'].intro = ''; },
+    content => { content.companyPages['/our-partners'].cards[0][2] = 'InvalidIcon'; },
+    content => { content.inspirations[0].width = -100; },
+  ]) {
+    const content = structuredClone(defaults); change(content); assert.ok(validateContent(content));
+  }
 });

@@ -10,12 +10,12 @@ const port = Number(process.env.PORT || 4173);
 if (!['127.0.0.1', 'localhost', '::1'].includes(host) && !process.env.CMS_SETUP_TOKEN) throw new Error('Set CMS_SETUP_TOKEN before binding to a public interface. Complete setup over HTTPS.');
 await stat(path.join(root, 'index.html')).catch(() => { throw new Error('Run npm run build before npm start.'); });
 const cms = createCms();
-const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.ico': 'image/x-icon' };
+const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.avif': 'image/avif', '.webp': 'image/webp', '.ico': 'image/x-icon' };
 const server = createServer((req, res) => cms(req, res, async () => {
   try {
     if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405); return res.end(); }
     const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
-    const relative = pathname === '/' || pathname === '/admin' || pathname === '/admin/' ? 'index.html' : pathname.slice(1);
+    const relative = ['/', '/admin', '/admin/', '/our-team', '/our-team/', '/our-partners', '/our-partners/', '/our-clients', '/our-clients/'].includes(pathname) ? 'index.html' : pathname.slice(1);
     const target = path.resolve(root, relative);
     if (!target.startsWith(root + path.sep)) { res.writeHead(403); return res.end(); }
     const data = await readFile(target);

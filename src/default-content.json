@@ -4,7 +4,7 @@
     "title": "You dream it.",
     "highlight": "We build it.",
     "description": "Full-service property development, architecture, construction and management. One team. Every stage.",
-    "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2400&q=90"
+    "image": "/images/construction-overview.jpeg"
   },
   "about": {
     "title": "One vision.\nOne accountable team.",
@@ -13,8 +13,8 @@
     "secondary": "Whether it is a family home, a commercial development or an existing property portfolio, you have one partner who sees the whole picture.",
     "mission": "To turn your property ambitions into safe, well-designed and durable realities — delivered on time, within budget and to the highest standard of workmanship, anywhere.",
     "vision": "To be the most trusted name in real estate development and construction management in the region.",
-    "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1000&q=85",
-    "imageAlt": "Light-filled contemporary interior with natural materials"
+    "image": "/images/site-planning.jpeg",
+    "imageAlt": "Four professionals in high-visibility vests reviewing drawings on a construction site."
   },
   "contact": {
     "phone": "+256 704 057 507",
@@ -33,7 +33,11 @@
         "Routine maintenance and emergency repair coordination",
         "Property inspections and condition reporting",
         "Tenancy compliance and utility coordination"
-      ]
+      ],
+      "image": "/images/modern-residence.jpeg",
+      "imageAlt": "Contemporary two-storey residence with a balcony and landscaped entrance.",
+      "imagePosition": "center 48%",
+      "imageFit": "contain"
     },
     {
       "name": "Construction Project Management",
@@ -45,7 +49,11 @@
         "Contractor and supplier procurement",
         "Site quality inspections and defects management",
         "Risk reporting and stakeholder communication"
-      ]
+      ],
+      "image": "/images/site-planning.jpeg",
+      "imageAlt": "Four professionals in high-visibility vests reviewing drawings on a construction site.",
+      "imagePosition": "center 65%",
+      "imageFit": "contain"
     },
     {
       "name": "Construction Services",
@@ -57,7 +65,11 @@
         "Roofing, walling, plastering and finishes",
         "Mechanical, electrical and plumbing coordination",
         "Final finishes, snagging and handover"
-      ]
+      ],
+      "image": "/images/construction-overview.jpeg",
+      "imageAlt": "Hard hat and rolled drawings overlooking a construction site.",
+      "imagePosition": "center",
+      "imageFit": "contain"
     },
     {
       "name": "Renovation",
@@ -69,7 +81,11 @@
         "Kitchen, bathroom and living-space upgrades",
         "Extensions, conversions and additional floors",
         "Heritage and neglected-property restoration"
-      ]
+      ],
+      "image": "/images/kitchen-renovation.jpeg",
+      "imageAlt": "Side-by-side kitchen renovation inspiration, before and after.",
+      "imagePosition": "right center",
+      "imageFit": "contain"
     },
     {
       "name": "Architectural Drawings",
@@ -81,7 +97,11 @@
         "Floor plans, elevations, sections and site plans",
         "Local authority approval and permit drawings",
         "Collaborative revisions through to sign-off"
-      ]
+      ],
+      "image": "/images/architectural-concept.jpeg",
+      "imageAlt": "A contemporary home model displayed on architectural drawings.",
+      "imagePosition": "center 50%",
+      "imageFit": "contain"
     },
     {
       "name": "Property Valuation",
@@ -93,7 +113,11 @@
         "Insurance and replacement-cost valuations",
         "Estate planning, taxation and dispute valuations",
         "Reports supported by comparable market evidence"
-      ]
+      ],
+      "image": "/images/architectural-blueprint.jpeg",
+      "imageAlt": "Detailed architectural floor plan with room layouts and dimensions.",
+      "imagePosition": "center",
+      "imageFit": "contain"
     }
   ],
   "steps": [
@@ -124,28 +148,94 @@
   ],
   "inspirations": [
     {
-      "title": "A home that feels like you.",
-      "category": "Residential",
-      "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=85",
-      "alt": "Contemporary home with a landscaped garden and warm interior lighting",
-      "description": "Thoughtful layouts. Natural light. Room to grow.",
-      "service": "Architectural Drawings"
+      "title": "From drawing to possibility",
+      "category": "Design & planning",
+      "image": "/images/architectural-concept.jpeg",
+      "alt": "A contemporary home model displayed on architectural drawings.",
+      "description": "A contemporary home model displayed on architectural drawings.",
+      "service": "Architectural Drawings",
+      "width": 736,
+      "height": 981
     },
     {
-      "title": "Space for better business.",
-      "category": "Commercial",
-      "image": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1000&q=85",
-      "alt": "Bright contemporary office with shared working spaces",
-      "description": "Places designed around people and the way they work.",
-      "service": "Construction Project Management"
+      "title": "Built on a clear plan",
+      "category": "Construction",
+      "image": "/images/construction-overview.jpeg",
+      "alt": "Hard hat and rolled drawings overlooking a construction site.",
+      "description": "Hard hat and rolled drawings overlooking a construction site.",
+      "service": "Construction Services",
+      "width": 735,
+      "height": 490
     },
     {
-      "title": "A fresh perspective.",
+      "title": "A kitchen reimagined",
       "category": "Renovation",
-      "image": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=85",
-      "alt": "Living room with neutral furnishings and large windows",
-      "description": "Reimagine the space you already call your own.",
-      "service": "Renovation"
+      "image": "/images/kitchen-renovation.jpeg",
+      "alt": "Side-by-side kitchen renovation inspiration, before and after.",
+      "description": "Side-by-side kitchen renovation inspiration, before and after.",
+      "service": "Renovation",
+      "width": 736,
+      "height": 736
+    },
+    {
+      "title": "A place to call your own",
+      "category": "Residential",
+      "image": "/images/modern-residence.jpeg",
+      "alt": "Contemporary two-storey residence with a balcony and landscaped entrance.",
+      "description": "Contemporary two-storey residence with a balcony and landscaped entrance.",
+      "service": "Property Management",
+      "width": 736,
+      "height": 1104
+    },
+    {
+      "title": "Every detail considered",
+      "category": "Design & planning",
+      "image": "/images/architectural-blueprint.jpeg",
+      "alt": "Detailed architectural floor plan with room layouts and dimensions.",
+      "description": "Detailed architectural floor plan with room layouts and dimensions.",
+      "service": "Architectural Drawings",
+      "width": 583,
+      "height": 900
+    },
+    {
+      "title": "Progress on the ground",
+      "category": "Construction",
+      "image": "/images/residential-construction.jpeg",
+      "alt": "Construction workers building block walls at a residential site.",
+      "description": "Construction workers building block walls at a residential site.",
+      "service": "Construction Project Management",
+      "width": 736,
+      "height": 552
+    },
+    {
+      "title": "New life for an existing space",
+      "category": "Renovation",
+      "image": "/images/interior-transformation.jpeg",
+      "alt": "Stacked before-and-after interior images showing a kitchen transformation.",
+      "description": "Stacked before-and-after interior images showing a kitchen transformation.",
+      "service": "Renovation",
+      "width": 736,
+      "height": 1104
+    },
+    {
+      "title": "See the vision take shape",
+      "category": "Design & planning",
+      "image": "/images/design-visualisation.jpeg",
+      "alt": "Architectural drawing blending into a modern house visualisation.",
+      "description": "Architectural drawing blending into a modern house visualisation.",
+      "service": "Architectural Drawings",
+      "width": 736,
+      "height": 736
+    },
+    {
+      "title": "One team. One direction.",
+      "category": "Construction",
+      "image": "/images/site-planning.jpeg",
+      "alt": "Four professionals in high-visibility vests reviewing drawings on a construction site.",
+      "description": "Four professionals in high-visibility vests reviewing drawings on a construction site.",
+      "service": "Construction Project Management",
+      "width": 735,
+      "height": 919
     }
   ],
   "guides": [
@@ -205,5 +295,150 @@
       "What happens when I submit the appointment form?",
       "The form prepares a project brief that you can send to our team through WhatsApp. You review and confirm sending in WhatsApp. You can also call us directly to discuss an appointment."
     ]
-  ]
+  ],
+  "companyPages": {
+    "/our-team": {
+      "title": "Our Team",
+      "eyebrow": "PEOPLE BEHIND THE PROMISE",
+      "headline": "One team.\nA shared commitment.",
+      "intro": "Meet the people leading Rakentaa, supported by the design, construction and property disciplines that bring your ideas to life.",
+      "image": "/images/site-planning.jpeg",
+      "imageAlt": "Illustrative image of construction professionals reviewing site drawings",
+      "section": "Meet our leadership",
+      "description": "Clear leadership. Coordinated operations. Hands-on site management.",
+      "people": [
+        {
+          "name": "Kiggundu Isaac",
+          "role": "Director",
+          "initials": "KI",
+          "image": "/images/kiggundu-isaac.jpeg"
+        },
+        {
+          "name": "Nakazibwe Patricia",
+          "role": "Operations Manager",
+          "initials": "NP"
+        },
+        {
+          "name": "Ssebulime Douglus",
+          "role": "Site Manager",
+          "initials": "SD"
+        }
+      ],
+      "cards": [
+        [
+          "Design & architecture",
+          "Architects translate your brief into concepts, drawings and practical plans.",
+          "Ruler"
+        ],
+        [
+          "Cost & project coordination",
+          "Quantity surveyors and project managers connect budgets, schedules and quality.",
+          "ChartNoAxesCombined"
+        ],
+        [
+          "Construction & property care",
+          "Skilled site teams and property professionals support construction, valuation and ongoing management.",
+          "HardHat"
+        ]
+      ],
+      "secondaryHeading": "Expertise at every stage",
+      "closing": "Bring your ambition. Meet your team.",
+      "cta": "Arrange a conversation",
+      "path": "/our-team"
+    },
+    "/our-partners": {
+      "title": "Our Partners",
+      "eyebrow": "WORKING TOGETHER",
+      "headline": "Better projects.\nBuilt together.",
+      "intro": "A successful project connects the right expertise, materials and people. Our approach brings these contributions together around your brief.",
+      "image": "/images/residential-construction.jpeg",
+      "imageAlt": "Illustrative residential construction site showing blockwork and roof framing",
+      "section": "A coordinated approach to collaboration",
+      "description": "The company profile describes working with specialist consultants, subcontractors and suppliers. These are the relationships that support delivery.",
+      "cards": [
+        [
+          "Specialist consultants",
+          "Architectural, structural and technical input coordinated around the needs of each project.",
+          "Ruler"
+        ],
+        [
+          "Contractors & skilled trades",
+          "Site teams and subcontractors working to agreed drawings, schedules and quality requirements.",
+          "HardHat"
+        ],
+        [
+          "Materials & suppliers",
+          "Procurement and supplier coordination that connects specifications, budgets and site requirements.",
+          "Layers3"
+        ]
+      ],
+      "secondaryHeading": "How we work together",
+      "steps": [
+        [
+          "Align the brief",
+          "Establish the scope, responsibilities and project requirements."
+        ],
+        [
+          "Coordinate delivery",
+          "Connect procurement, scheduling and site communication."
+        ],
+        [
+          "Review quality",
+          "Keep inspections, reporting and handover in focus."
+        ]
+      ],
+      "closing": "Interested in working with Rakentaa?",
+      "cta": "Discuss a collaboration",
+      "path": "/our-partners"
+    },
+    "/our-clients": {
+      "title": "Our Clients",
+      "eyebrow": "BUILT AROUND YOUR AMBITION",
+      "headline": "Different ambitions.\nThe same care.",
+      "intro": "From families planning a home to businesses and property owners, our services are built around your goals, budget and long-term plans.",
+      "image": "/images/modern-residence.jpeg",
+      "imageAlt": "Illustrative contemporary residence with a landscaped entrance",
+      "section": "Who we work with",
+      "description": "Every brief is different. We bring connected services and one accountable point of contact to each property journey.",
+      "cards": [
+        [
+          "Homeowners & families",
+          "Architectural design, construction and renovation for spaces shaped around the way you live.",
+          "Building2"
+        ],
+        [
+          "Property owners & investors",
+          "Development coordination, property management and valuation to support informed property decisions.",
+          "KeyRound"
+        ],
+        [
+          "Businesses & organisations",
+          "Design, construction and refurbishment for commercial properties and working spaces.",
+          "Layers3"
+        ]
+      ],
+      "secondaryHeading": "What you can expect",
+      "steps": [
+        [
+          "A brief that starts with you",
+          "Your purpose, site, budget and timeline set the direction."
+        ],
+        [
+          "Visibility through the process",
+          "Clear communication, coordinated delivery and regular updates."
+        ],
+        [
+          "Care beyond construction",
+          "Ongoing management and property services when you need them."
+        ]
+      ],
+      "closing": "Your next chapter starts with a conversation.",
+      "cta": "Tell us about your project",
+      "path": "/our-clients"
+    }
+  },
+  "gallerySettings": {
+    "speed": 40,
+    "autoplay": true
+  }
 }
