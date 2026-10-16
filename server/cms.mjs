@@ -9,6 +9,14 @@ import { validateContent, withContentDefaults } from '../src/content-schema.js';
 const scrypt = promisify(deriveKey);
 const projectRoot = fileURLToPath(new URL('../', import.meta.url));
 const SESSION_AGE = 8 * 60 * 60 * 1000;
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+const uploadTypes = { png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp' };
+function imageExtension(bytes) {
+  if (bytes.length >= 24 && bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10])) && bytes.toString('ascii', 12, 16) === 'IHDR') return 'png';
+  if (bytes.length >= 4 && bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255 && bytes[bytes.length - 2] === 255 && bytes[bytes.length - 1] === 217) return 'jpg';
+  if (bytes.length >= 16 && bytes.toString('ascii', 0, 4) === 'RIFF' && bytes.toString('ascii', 8, 12) === 'WEBP') return 'webp';
+  return null;
+}
 class HttpError extends Error {
   constructor(status, message) { super(message); this.status = status; }
 }
@@ -107,8 +115,18 @@ export function createCms({ dataDir = process.env.CMS_DATA_DIR || path.join(proj
   return async function cms(req, res, next = () => send(res, 404, { error: 'Not found.' })) {
     let url;
     try { url = new URL(req.url, 'http://localhost'); } catch { return send(res, 400, { error: 'Invalid URL.' }); }
-    if (!url.pathname.startsWith('/api/')) return next();
     try {
+      if (url.pathname.startsWith('/uploads/')) {
+        const match = /^\/uploads\/([a-f0-9]{32}\.(png|jpg|webp))$/.exec(url.pathname);
+        if (!match) return send(res, 404, { error: 'Image not found.' });
+        if (!['GET', 'HEAD'].includes(req.method)) return send(res, 405, { error: 'Method not allowed.' });
+        let bytes;
+        try { bytes = await readFile(path.join(dataDir, 'uploads', match[1])); }
+        catch (error) { if (error.code === 'ENOENT') return send(res, 404, { error: 'Image not found.' }); throw error; }
+        res.writeHead(200, { 'Content-Type': uploadTypes[match[2]], 'Content-Length': bytes.length, 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'; sandbox" });
+        return res.end(req.method === 'HEAD' ? undefined : bytes);
+      }
+      if (!url.pathname.startsWith('/api/')) return next();
       const route = `${req.method} ${url.pathname}`;
       if (req.method !== 'GET') sameOrigin(req);
       if (route === 'GET /api/content') {
@@ -148,6 +166,24 @@ export function createCms({ dataDir = process.env.CMS_DATA_DIR || path.join(proj
         return send(res, 200, { ok: true });
       }
       requireSession(req);
+      if (route === 'POST /api/admin/uploads') {
+        if (!Object.values(uploadTypes).includes(req.headers['content-type'])) throw new HttpError(415, 'Choose a JPEG, PNG or WebP image.');
+        if (Number(req.headers['content-length']) > MAX_IMAGE_SIZE) throw new HttpError(413, 'Choose an image smaller than 10 MB.');
+        let size = 0;
+        const chunks = [];
+        for await (const chunk of req) {
+          size += chunk.length;
+          if (size > MAX_IMAGE_SIZE) throw new HttpError(413, 'Choose an image smaller than 10 MB.');
+          chunks.push(chunk);
+        }
+        const bytes = Buffer.concat(chunks);
+        const extension = imageExtension(bytes);
+        if (!extension || uploadTypes[extension] !== req.headers['content-type']) throw new HttpError(400, 'This file is not a supported image. Choose a JPEG, PNG or WebP image.');
+        const filename = `${randomBytes(16).toString('hex')}.${extension}`;
+        await mkdir(path.join(dataDir, 'uploads'), { recursive: true });
+        await writeFile(path.join(dataDir, 'uploads', filename), bytes, { flag: 'wx', mode: 0o600 });
+        return send(res, 201, { image: `/uploads/${filename}` });
+      }
       if (route === 'GET /api/admin/content') return send(res, 200, await store());
       if (route === 'PUT /api/admin/content' || route === 'POST /api/admin/publish') {
         const input = await body(req);

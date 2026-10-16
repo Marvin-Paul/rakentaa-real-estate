@@ -3,12 +3,12 @@ import { ArrowUpRight, ArrowUp, ChevronDown, Menu, X, Phone, MapPin, MessageCirc
 import { useContent } from './content.jsx';
 
 const companyLinks = [['About Rakentaa', '/#about'], ['Our Team', '/our-team'], ['Our Partners', '/our-partners'], ['Our Clients', '/our-clients']];
-const mainLinks = [['Home', '/#home'], ['Services', '/#services'], ['Gallery', '/#gallery'], ['Our Approach', '/#process']];
+const mainLinks = [['Home', '/#home'], ['Services', '/#services'], ['Properties', '/#properties'], ['Gallery', '/#gallery'], ['Our Approach', '/#process']];
 
 function Logo({ light = false }) {
   return <a className={`logo brand-lockup ${light ? 'logo-light' : ''}`} href="/#home" aria-label="Rakentaa Real Estate home">
     <span className="logo-art"><img src="/rakentaa-logo-transparent.png" alt="" width="1240" height="1268" /></span>
-    <span className="brand-name">RAKENTAA<small>REAL ESTATE</small></span>
+    <span className="brand-name">RAKENTAA<small>REAL ESTATE</small><span className="brand-credit"><span className="brand-credit-label">A product of</span><strong>Rakenta Group of Companies</strong></span></span>
   </a>;
 }
 
@@ -61,10 +61,10 @@ export function Footer() {
     <div className="footer-project"><div><p>FROM IDEA TO REALITY</p><h2>Let's build your next chapter.</h2></div><a className="button" href="/#contact">Start a conversation <ArrowUpRight size={19} /></a></div>
     <div className="footer-columns">
       <div className="footer-brand"><Logo light /><p>Property, construction and design.<br />One accountable team, from your first idea to lasting value.</p><span className="footer-tagline">You dream it. We build it. Any-Where.</span></div>
-      <nav className="footer-column" aria-label="Company links"><h3>Company</h3>{companyLinks.map(([label, href]) => <a href={href} key={href}>{label}</a>)}<a href="/#gallery">Our Gallery</a><a href="/#process">Our Approach</a></nav>
+      <nav className="footer-column" aria-label="Company links"><h3>Company</h3>{companyLinks.map(([label, href]) => <a href={href} key={href}>{label}</a>)}<a href="/#properties">Properties for sale</a><a href="/#gallery">Our Gallery</a><a href="/#process">Our Approach</a></nav>
       <nav className="footer-column" aria-label="Services links"><h3>Our Services</h3>{services.map(service => <a href="/#services" key={service.name}>{service.name}</a>)}</nav>
       <div className="footer-column footer-contact"><h3>Get in Touch</h3><a className="footer-contact-row" href={telephone}><Phone size={18} /><span><small>Call for an appointment</small>{contact.phone}</span></a><div className="footer-contact-row"><MapPin size={18} /><span><small>Based in</small>{contact.location}</span></div><a className="footer-whatsapp" href={whatsapp} target="_blank" rel="noopener noreferrer"><MessageCircle size={18} />Chat on WhatsApp<ArrowUpRight size={15} /></a><p>Working wherever you need us.</p></div>
     </div>
-    <div className="footer-legal"><p>© {new Date().getFullYear()} Rakentaa Real Estate. All rights reserved.</p><div><a href="/admin">Admin CMS</a><a href="#" onClick={event => { event.preventDefault(); window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }); }}>Back to top <ArrowUp size={14} /></a></div></div>
+    <div className="footer-legal"><p>© {new Date().getFullYear()} Rakentaa Real Estate. All rights reserved.<br />A product of <strong>Rakenta Group of Companies</strong>.</p><div><a href="/admin">Admin CMS</a><a href="#" onClick={event => { event.preventDefault(); window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }); }}>Back to top <ArrowUp size={14} /></a></div></div>
   </div></footer>;
 }

@@ -5,6 +5,7 @@ import './styles.css';
 import { ContentProvider, useContent } from './content.jsx';
 import Admin from './Admin.jsx';
 import Gallery from './Gallery.jsx';
+import Properties from './Properties.jsx';
 import Services from './Services.jsx';
 import { Navbar, Footer } from './SiteChrome.jsx';
 import { CompanyPage, companyPages } from './CompanyPages.jsx';
@@ -85,7 +86,7 @@ function App(){
     setEnquiry({service});
     document.getElementById('contact').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
   };
-  return <><a className="skip-link" href="#main">Skip to content</a><div className="utility-bar"><div className="container"><span><MapPin size={13}/> {content.contact.location} · Working wherever you need us</span><a href={`tel:${content.contact.phone.replace(/[^+\d]/g,'')}`}><Phone size={13}/> {PHONE}</a></div></div><Navbar/><main id="main">{companyPage?<CompanyPage page={companyPage}/>:<><Hero/><ProjectFinder onEnquire={enquire}/><IntroStrip/><About/><Services/><Gallery onEnquire={enquire}/><Process/><WhyUs/><PlanningGuides/><FrequentlyAsked/><Invitation/><Contact enquiry={enquiry}/></>}</main><Footer/><a className="floating-contact" href={`https://wa.me/${content.contact.phone.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer" aria-label="Chat with Rakentaa on WhatsApp"><MessageCircle size={23}/><span>Let’s talk</span></a></>;
+  return <><a className="skip-link" href="#main">Skip to content</a><div className="utility-bar"><div className="container"><span><MapPin size={13}/> {content.contact.location} · Working wherever you need us</span><a href={`tel:${content.contact.phone.replace(/[^+\d]/g,'')}`}><Phone size={13}/> {PHONE}</a></div></div><Navbar/><main id="main">{companyPage?<CompanyPage page={companyPage}/>:<><Hero/><ProjectFinder onEnquire={enquire}/><IntroStrip/><About/><Services/><Properties/><Gallery onEnquire={enquire}/><Process/><WhyUs/><PlanningGuides/><FrequentlyAsked/><Invitation/><Contact enquiry={enquiry}/></>}</main><Footer/><a className="floating-contact" href={`https://wa.me/${content.contact.phone.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer" aria-label="Chat with Rakentaa on WhatsApp"><MessageCircle size={23}/><span>Let’s talk</span></a></>;
 }
 createRoot(document.getElementById('root')).render(/^\/admin\/?$/.test(window.location.pathname)?<Admin/>:<ContentProvider><App/></ContentProvider>);
 

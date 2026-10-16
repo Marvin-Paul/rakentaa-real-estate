@@ -7,6 +7,7 @@ export const imagePositions = ['center', 'center top', 'center bottom', 'left ce
 export function withContentDefaults(content) {
   return {
     ...content,
+    properties: content.properties ?? [],
     services: content.services.map((service, index) => ({ ...defaults.services[index], ...service })),
     gallerySettings: { ...defaults.gallerySettings, ...content.gallerySettings },
     companyPages: Object.fromEntries(Object.entries(defaults.companyPages).map(([path, page]) => [path, { ...page, ...content.companyPages?.[path], path }])),
@@ -16,13 +17,15 @@ export function withContentDefaults(content) {
 // Shared by the editor and server. Only structured plain text and safe image URLs are accepted.
 export function validateContent(content) {
   const text = (value, label, max = 3000) => {
-    if (typeof value !== 'string' || !value.trim() || value.length > max) throw new Error(`${label} is required and must be at most ${max} characters.`);
+    if (typeof value !== 'string' || !value.trim()) throw new Error(`${label} is required.`);
+    if (value.length > max) throw new Error(`${label} must be at most ${max} characters.`);
   };
   const image = (value, label) => {
     text(value, label, 2000);
     if (/^\/images\/[a-zA-Z0-9_-]+\.(?:jpe?g|png|webp|avif)$/.test(value)) return;
+    if (/^\/uploads\/[a-f0-9]{32}\.(?:png|jpg|webp)$/.test(value)) return;
     let url;
-    try { url = new URL(value); } catch { throw new Error(`${label} must be a full HTTPS image URL or a local /images/ asset path.`); }
+    try { url = new URL(value); } catch { throw new Error(`${label} must be an uploaded image, a full HTTPS image URL or a local /images/ asset path.`); }
     if (url.protocol !== 'https:' || url.username || url.password) throw new Error(`${label} must be an HTTPS URL without credentials.`);
   };
   const array = (value, label, min = 1, max = 30) => {
@@ -34,6 +37,15 @@ export function validateContent(content) {
     image(content.hero.image, 'Hero image');
     fields(content?.about, ['title', 'lead', 'description', 'secondary', 'mission', 'vision', 'imageAlt'], 'About');
     image(content.about.image, 'About image');
+    if (content.properties !== undefined) {
+      array(content.properties, 'Properties for sale', 0, 60);
+      content.properties.forEach((item, index) => {
+        const label = `Property ${index + 1}${item?.title ? ` (${item.title.slice(0, 80)})` : ''}`;
+        fields(item, ['title', 'location', 'price', 'type', 'size', 'description', 'imageAlt'], label);
+        image(item.image, `${label}: photo`);
+        if (!['Available', 'Reserved', 'Sold'].includes(item.status)) throw new Error('Choose a valid property status.');
+      });
+    }
     fields(content?.contact, ['phone', 'location', 'heading', 'intro'], 'Contact');
     if (!/^\+?[\d ()-]{7,30}$/.test(content.contact.phone) || content.contact.phone.replace(/\D/g, '').length < 7) throw new Error('Enter a valid phone number, including its country code.');
     array(content.services, 'Services', 6, 6);

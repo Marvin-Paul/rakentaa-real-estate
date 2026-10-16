@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Building2, LayoutDashboard, Home, Users, Layers3, Images, BookOpen, ListOrdered, MessageCircle, Phone, LogOut, ExternalLink, Save, Upload, Plus, Trash2, ArrowUp, ArrowDown, ShieldCheck, Download } from 'lucide-react';
 import defaults from './default-content.json';
 import { categories, serviceNames, validateContent, imagePositions } from './content-schema.js';
 import './admin.css';
 import imageLibrary from './image-library.json';
 
-const sections = [ ['overview', 'Overview', LayoutDashboard], ['hero', 'Homepage', Home], ['about', 'About Rakentaa', Users], ['services', 'Services', Layers3], ['inspirations', 'Photo gallery', Images], ['gallerySettings', 'Gallery playback', Images], ['team', 'Our Team', Users], ['partners', 'Our Partners', Layers3], ['clients', 'Our Clients', Building2], ['guides', 'Planning guides', BookOpen], ['steps', 'Our process', ListOrdered], ['faqs', 'Questions & answers', MessageCircle], ['contact', 'Contact details', Phone] ];
+const sections = [ ['overview', 'Overview', LayoutDashboard], ['hero', 'Homepage', Home], ['about', 'About Rakentaa', Users], ['services', 'Services', Layers3], ['properties', 'Properties for sale', Building2], ['inspirations', 'Photo gallery', Images], ['gallerySettings', 'Gallery playback', Images], ['team', 'Our Team', Users], ['partners', 'Our Partners', Layers3], ['clients', 'Our Clients', Building2], ['guides', 'Planning guides', BookOpen], ['steps', 'Our process', ListOrdered], ['faqs', 'Questions & answers', MessageCircle], ['contact', 'Contact details', Phone] ];
 const copy = value => structuredClone(value);
 const pagePaths = {team:'/our-team',partners:'/our-partners',clients:'/our-clients'};
 async function api(path, method = 'GET', data) {
@@ -19,12 +19,52 @@ function Field({ label, value, onChange, multiline = false, hint, type = 'text',
 }
 function ImageField({ label, value = '', onChange, onAsset, alt = 'Content image preview', optional = false }) {
   const [failed, setFailed] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [uploaded, setUploaded] = useState(false);
+  const callbacks = useRef();
+  callbacks.current = { onChange };
+  const controller = useRef(null);
   useEffect(() => setFailed(false), [value]);
-  return <div className="cms-image-field"><Field label={label} value={value} onChange={onChange} hint={optional ? 'Optional. Choose a bundled image or paste a full HTTPS image URL. Leave empty to use initials.' : 'Choose from the image library below, or paste a local /images/ path or full HTTPS URL.'} />{value && ((value.startsWith('https://') || value.startsWith('/images/')) && !failed ? <img className="cms-image-preview" src={value} alt={alt} onError={() => setFailed(true)} /> : <p className="cms-image-error">Image unavailable. Check the path before publishing.</p>)}<details className="cms-image-library"><summary><Images size={16}/>Choose from image library<span>{imageLibrary.length} images</span></summary><div className="cms-image-library-grid">{imageLibrary.map(asset=><button type="button" key={asset.image} aria-pressed={value===asset.image} onClick={()=>onAsset ? onAsset(asset) : onChange(asset.image)}><img src={asset.image} alt="" loading="lazy"/><span>{asset.title}</span></button>)}</div></details></div>;
+  useEffect(() => () => controller.current?.abort(), []);
+  async function upload(event) {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    setUploadError(''); setUploaded(false);
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) { setUploadError('Choose a JPEG, PNG or WebP image.'); return; }
+    if (file.size > 10 * 1024 * 1024) { setUploadError('Choose an image smaller than 10 MB.'); return; }
+    controller.current?.abort();
+    const request = new AbortController();
+    controller.current = request;
+    setUploading(true);
+    try {
+      const bitmap = await createImageBitmap(file);
+      bitmap.close();
+      if (request.signal.aborted) return;
+      const response = await fetch('/api/admin/uploads', { method: 'POST', headers: { 'Content-Type': file.type }, body: file, signal: request.signal });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Upload failed. Please try again.');
+      callbacks.current.onChange(result.image);
+      setUploaded(true);
+    } catch (error) {
+      if (error.name !== 'AbortError') setUploadError(error.message || 'This image could not be uploaded. Try another file.');
+    } finally { if (!request.signal.aborted) setUploading(false); }
+  }
+  return <div className="cms-image-field">
+    <label className={`cms-image-upload ${uploading ? 'is-uploading' : ''}`}><Upload size={19}/><span>{uploading ? 'Uploading image?' : 'Upload image from your device'}</span><input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} onChange={upload} /></label>
+    <p className="cms-hint">JPEG, PNG or WebP ? Up to 10 MB. Uploading selects the image; save and publish to update the website.</p>
+    {uploading && <p role="status">Uploading image. Please keep this section open.</p>}
+    {uploadError && <p className="cms-alert error" role="alert">{uploadError}</p>}
+    {uploaded && <p className="cms-alert success" role="status">Image uploaded and selected. Save your draft when ready.</p>}
+    <Field label={label} value={value} onChange={onChange} hint={optional ? 'Optional. Upload a photo, select from the library or paste an image URL. Leave empty to use initials.' : 'Upload above, select from the library, or paste an image URL.'} />
+    {value && ((value.startsWith('https://') || value.startsWith('/images/') || value.startsWith('/uploads/')) && !failed ? <img className="cms-image-preview" src={value} alt={alt} onError={() => setFailed(true)} /> : <p className="cms-image-error">Image unavailable. Check the path before publishing.</p>)}
+    <details className="cms-image-library"><summary><Images size={16}/>Choose from image library<span>{imageLibrary.length} images</span></summary><div className="cms-image-library-grid">{imageLibrary.map(asset=><button type="button" disabled={uploading} key={asset.image} aria-pressed={value===asset.image} onClick={()=>onAsset ? onAsset(asset) : onChange(asset.image)}><img src={asset.image} alt="" loading="lazy"/><span>{asset.title}</span></button>)}</div></details>
+  </div>;
 }
-function ItemsEditor({ title, items, update, create, children, max = 20 }) {
+function ItemsEditor({ title, items, update, create, children, max = 20, min = 1 }) {
   function move(index, offset) { const next = [...items]; [next[index], next[index + offset]] = [next[index + offset], next[index]]; update(next); }
-  return <div className="cms-items">{items.map((item, index) => <section className="cms-panel" key={index}><div className="cms-item-heading"><h2>{title} {String(index + 1).padStart(2, '0')}</h2><div className="cms-item-actions"><button type="button" title="Move up" aria-label={`Move ${title} ${index + 1} up`} disabled={index === 0} onClick={() => move(index, -1)}><ArrowUp size={17} /></button><button type="button" title="Move down" aria-label={`Move ${title} ${index + 1} down`} disabled={index === items.length - 1} onClick={() => move(index, 1)}><ArrowDown size={17} /></button><button type="button" title="Remove item" aria-label={`Remove ${title} ${index + 1}`} disabled={items.length === 1} onClick={() => update(items.filter((_, i) => i !== index))}><Trash2 size={17} /></button></div></div>{children(item, value => update(items.map((entry, i) => i === index ? value : entry)), index)}</section>)}{items.length < max && <button className="cms-secondary" type="button" onClick={() => update([...items, create()])}><Plus size={18} /> Add {title.toLowerCase()}</button>}</div>;
+  return <div className="cms-items">{items.map((item, index) => <section className="cms-panel" key={index}><div className="cms-item-heading"><h2>{title} {String(index + 1).padStart(2, '0')}</h2><div className="cms-item-actions"><button type="button" title="Move up" aria-label={`Move ${title} ${index + 1} up`} disabled={index === 0} onClick={() => move(index, -1)}><ArrowUp size={17} /></button><button type="button" title="Move down" aria-label={`Move ${title} ${index + 1} down`} disabled={index === items.length - 1} onClick={() => move(index, 1)}><ArrowDown size={17} /></button><button type="button" title="Remove item" aria-label={`Remove ${title} ${index + 1}`} disabled={items.length <= min} onClick={() => update(items.filter((_, i) => i !== index))}><Trash2 size={17} /></button></div></div>{children(item, value => update(items.map((entry, i) => i === index ? value : entry)), index)}</section>)}{items.length < max && <button className="cms-secondary" type="button" onClick={() => update([...items, create()])}><Plus size={18} /> Add {title.toLowerCase()}</button>}</div>;
 }
 export function ContentEditor({ section, draft, setDraft }) {
   if (['team','partners','clients'].includes(section)) return <CompanyPageEditor section={section} draft={draft} setDraft={setDraft}/>;
@@ -33,6 +73,7 @@ export function ContentEditor({ section, draft, setDraft }) {
   const objectField = (name, label, multiline = false) => <Field key={name} label={label} value={item[name]} onChange={value => update({ ...item, [name]: value })} multiline={multiline} />;
   const image = (name, label, alt) => <ImageField label={label} value={item[name]} onChange={value => update({ ...item, [name]: value })} alt={alt} />;
   if (section === 'gallerySettings') return <section className="cms-panel"><h2>Gallery movement</h2><p className="cms-hint">Set the initial playback. Visitors can still pause the gallery and change speed. Reduced-motion preferences start it paused.</p><Field label="Scrolling speed" value={String(item.speed)} options={['24','40','60']} onChange={value=>update({...item,speed:Number(value)})} hint="24 = Slow, 40 = Steady, 60 = Brisk (pixels per second)."/><Field label="Start moving automatically" value={item.autoplay?'Yes':'No'} options={['Yes','No']} onChange={value=>update({...item,autoplay:value==='Yes'})}/></section>;
+  if (section === 'properties') return <><p className="cms-hint">Add actual properties offered for sale. Upload a property photo, then Save draft, Preview draft and Publish. Remove a listing or mark it Sold when it is no longer available.</p><ItemsEditor title="Property" items={item} update={update} min={0} max={60} create={() => ({title:'New property',location:'',price:'',type:'House',size:'',description:'',image:'',imageAlt:'',status:'Available'})}>{(entry,set) => <><Field label="Property title" value={entry.title} onChange={title=>set({...entry,title})}/><div className="cms-field-row"><Field label="Location" value={entry.location} onChange={location=>set({...entry,location})}/><Field label="Asking price (include currency, e.g. UGX)" value={entry.price} onChange={price=>set({...entry,price})}/></div><div className="cms-field-row"><Field label="Property type" value={entry.type} onChange={type=>set({...entry,type})}/><Field label="Size (include units)" value={entry.size} onChange={size=>set({...entry,size})}/></div><Field label="Description" value={entry.description} multiline onChange={description=>set({...entry,description})}/><ImageField label="Property photo" value={entry.image} alt={entry.imageAlt || entry.title} onChange={image=>set({...entry,image})}/><Field label="Photo description" value={entry.imageAlt} onChange={imageAlt=>set({...entry,imageAlt})}/><Field label="Availability" value={entry.status} options={['Available','Reserved','Sold']} onChange={status=>set({...entry,status})}/></>}</ItemsEditor></>;
   if (section === 'hero') return <section className="cms-panel"><h2>Make a strong first impression</h2>{objectField('eyebrow', 'Introductory label')}{objectField('title', 'Headline — first line')}{objectField('highlight', 'Headline — highlighted line')}{objectField('description', 'Introduction', true)}{image('image', 'Hero background image')}</section>;
   if (section === 'about') return <section className="cms-panel"><h2>Your company story</h2>{objectField('title', 'Heading', true)}{objectField('lead', 'Lead paragraph', true)}{objectField('description', 'Company introduction', true)}{objectField('secondary', 'Additional introduction', true)}{objectField('mission', 'Mission', true)}{objectField('vision', 'Vision', true)}{image('image', 'About image', item.imageAlt)}{objectField('imageAlt', 'Image description for accessibility')}</section>;
   if (section === 'contact') return <section className="cms-panel"><h2>Help people reach you</h2>{objectField('phone', 'Phone / WhatsApp number (with country code)')}{objectField('location', 'Location')}{objectField('heading', 'Contact heading', true)}{objectField('intro', 'Contact introduction', true)}<p className="cms-hint">Publishing the phone number updates the call and WhatsApp links throughout the website.</p></section>;
@@ -96,7 +137,7 @@ export default function Admin() {
   }, [dirty]);
   async function save() {
     const validation = validateContent(draft);
-    if (validation) { setError(validation); setNotice(''); return; }
+    if (validation) { setError(validation); setNotice(''); if (validation.startsWith('Property ')) setSection('properties'); window.scrollTo({top:0,behavior:'smooth'}); return; }
     setBusy(true); setError(''); setNotice('');
     try { const result = await api('content', 'PUT', { content: draft, revision: record.revision }); setRecord(result); setDraft(copy(result.draft)); setNotice('Draft saved on the server. Preview it, or publish when you are ready.'); }
     catch (failure) { setError(failure.message); if (failure.status === 401) setSession({ ...session, username: null }); }
@@ -104,7 +145,7 @@ export default function Admin() {
   }
   async function publish() {
     setBusy(true); setError(''); setNotice('');
-    try { const result = await api('publish', 'POST', { revision: record.revision }); setRecord(result); setNotice('Published successfully. Your changes are now available on the public website.'); }
+    try { const result = await api('publish', 'POST', { revision: record.revision }); setRecord(result); if (typeof BroadcastChannel !== 'undefined') { const channel = new BroadcastChannel('rakentaa-content'); channel.postMessage({ published: true }); channel.close(); } setNotice('Published successfully. Your changes are now available on the public website.'); }
     catch (failure) { setError(failure.message); if (failure.status === 401) setSession({ ...session, username: null }); }
     finally { setBusy(false); }
   }

@@ -43,8 +43,29 @@ test('CMS authentication, draft isolation, publish, persistence, and public rend
   assert.equal(JSON.stringify(account).includes('a-long-test-password'), false);
   assert.equal((await request('/api/admin/setup', { method: 'POST', body: { username: 'other', password: 'another-long-password' } })).status, 409);
   const state = (await request('/api/admin/content')).data;
+  const imageBytes = await readFile(new URL('../public/rakentaa-logo-transparent.png', import.meta.url));
+  const upload = (bytes, { mime = 'image/png', authenticated = true, origin = app.base } = {}) => fetch(app.base + '/api/admin/uploads', { method: 'POST', headers: { Origin: origin, 'Content-Type': mime, ...(authenticated ? { Cookie: cookie } : {}) }, body: bytes });
+  assert.equal((await upload(imageBytes, { authenticated: false })).status, 401);
+  assert.equal((await upload(imageBytes, { origin: 'https://example.com' })).status, 403);
+  assert.equal((await upload(Buffer.from('<svg onload="alert(1)"/>'), { mime: 'image/svg+xml' })).status, 415);
+  assert.equal((await upload(Buffer.from('not an image'))).status, 400);
+  assert.equal((await upload(imageBytes, { mime: 'image/jpeg' })).status, 400);
+  assert.equal((await upload(Buffer.alloc(10 * 1024 * 1024 + 1))).status, 413);
+  const uploadedResponse = await upload(imageBytes);
+  assert.equal(uploadedResponse.status, 201);
+  const uploaded = await uploadedResponse.json();
+  assert.match(uploaded.image, /^\/uploads\/[a-f0-9]{32}\.png$/);
+  const photoResponse = await fetch(app.base + uploaded.image);
+  assert.equal(photoResponse.headers.get('content-type'), 'image/png');
+  assert.equal(photoResponse.headers.get('x-content-type-options'), 'nosniff');
+  assert.deepEqual(Buffer.from(await photoResponse.arrayBuffer()), imageBytes);
+  assert.equal((await fetch(app.base + '/uploads/admin.json')).status, 404);
+  assert.equal((await fetch(app.base + '/uploads/' + 'a'.repeat(32) + '.png')).status, 404);
+  assert.equal((await fetch(app.base + uploaded.image, { method: 'HEAD' })).status, 200);
   const edited = structuredClone(state.draft);
+  edited.hero.image = uploaded.image;
   edited.hero.title = 'A published CMS headline';
+  edited.properties = [{ title: 'Test home for sale', location: 'Kampala', price: 'UGX 250,000,000', type: 'House', size: '20 decimals', description: 'A property listing managed through the CMS.', image: '/images/residential-construction.jpeg', imageAlt: 'Test property exterior', status: 'Available' }];
   edited.contact.phone = '+256 700 123 456';
   edited.faqs.push(['Does publishing work?', 'Yes, content comes from the server.']);
   edited.inspirations[0].title = 'A new gallery title';
@@ -61,6 +82,8 @@ test('CMS authentication, draft isolation, publish, persistence, and public rend
   const saved = await request('/api/admin/content', { method: 'PUT', body: { revision: state.revision, content: edited } });
   assert.equal(saved.status, 200);
   assert.equal((await request('/api/content', { authenticated: false })).data.content.hero.title, defaults.hero.title);
+  assert.deepEqual((await request('/api/content', { authenticated: false })).data.content.properties, []);
+  assert.equal((await request('/api/admin/content', { method: 'PUT', authenticated: false, body: { revision: saved.data.revision, content: edited } })).status, 401);
   assert.equal((await request('/api/admin/content')).data.draft.hero.title, edited.hero.title);
   assert.equal((await request('/api/admin/content', { method: 'PUT', body: { revision: state.revision, content: edited } })).status, 409);
   const invalid = structuredClone(edited); invalid.inspirations[0].image = 'javascript:alert(1)';
@@ -73,6 +96,7 @@ test('CMS authentication, draft isolation, publish, persistence, and public rend
   const restarted = await serve({ dataDir });
   try {
     assert.deepEqual((await (await fetch(restarted.base + '/api/content')).json()).content, edited);
+    assert.deepEqual(Buffer.from(await (await fetch(restarted.base + uploaded.image)).arrayBuffer()), imageBytes);
     assert.equal((await fetch(restarted.base + '/api/admin/content')).status, 401);
   } finally { await restarted.close(); }
 
@@ -85,12 +109,28 @@ test('CMS authentication, draft isolation, publish, persistence, and public rend
   try {
     const { App, ContentContext, CompanyPage, companyPages, ContentEditor } = await import(pathToFileURL(bundle).href);
     const markup = renderToStaticMarkup(React.createElement(ContentContext.Provider, { value: publicContent }, React.createElement(App)));
-    for (const [section, expected] of [['services', 'Service header image'], ['inspirations', 'Choose from image library'], ['gallerySettings', 'Scrolling speed'], ['team', 'CMS team member'], ['partners', 'CMS partnership headline'], ['clients', 'CMS client introduction']]) {
+    for (const [section, expected] of [['hero', 'Hero background image'], ['about', 'About image'], ['properties', 'Property photo'], ['services', 'Service header image'], ['inspirations', 'Choose from image library'], ['gallerySettings', 'Scrolling speed'], ['team', 'CMS team member'], ['partners', 'CMS partnership headline'], ['clients', 'CMS client introduction']]) {
       const adminMarkup = renderToStaticMarkup(React.createElement(ContentEditor, { section, draft: publicContent, setDraft: () => {} }));
       assert.ok(adminMarkup.includes(expected), `Admin section ${section} should display ${expected}`);
       assert.equal(adminMarkup.includes('Image unavailable.'), false);
+      if (section !== 'gallerySettings') assert.ok(adminMarkup.includes('type="file"'), `${section} has an image uploader`);
     }
     assert.ok(markup.includes(edited.hero.title));
+    assert.ok(markup.includes('Test home for sale'));
+    assert.ok(markup.includes('UGX 250,000,000'));
+    assert.ok(markup.includes('Enquire about this property'));
+    const propertyEditor = renderToStaticMarkup(React.createElement(ContentEditor, { section: 'properties', draft: publicContent, setDraft: () => {} }));
+    assert.ok(propertyEditor.includes('Test home for sale'));
+    assert.ok(propertyEditor.includes('Add property'));
+    const soldContent = structuredClone(publicContent);
+    soldContent.properties[0].status = 'Sold';
+    const soldMarkup = renderToStaticMarkup(React.createElement(ContentContext.Provider, { value: soldContent }, React.createElement(App)));
+    assert.ok(soldMarkup.includes('status-sold'));
+    assert.equal(soldMarkup.includes('Enquire about this property'), false);
+    soldContent.properties = [];
+    assert.equal(validateContent(soldContent), null);
+    const emptyMarkup = renderToStaticMarkup(React.createElement(ContentContext.Provider, { value: soldContent }, React.createElement(App)));
+    assert.ok(emptyMarkup.includes('New listings coming soon.'));
     assert.ok(markup.includes('tel:+256700123456'));
     assert.ok(markup.includes('https://wa.me/256700123456'));
     assert.ok(markup.includes('Does publishing work?'));

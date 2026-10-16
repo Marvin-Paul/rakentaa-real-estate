@@ -14,7 +14,7 @@ Use Node.js 20.19+ or 22.12+. From `D:\Rakenta\website`, run `npm install`, then
 
 Open `/admin` on the same Local URL (for example `http://127.0.0.1:5173/admin`), or use **Admin CMS** in the website footer. On first use, create a username and a password of at least 12 characters. There is no default password. Initial account creation is restricted to localhost unless a server setup token is configured.
 
-Use the sidebar to edit homepage copy and images, the company story, service descriptions, gallery entries, guides, process steps, FAQs and contact details. Image fields include a picker for the bundled photos and accept local `/images/` paths or full HTTPS URLs; this version does not upload files. The six core service names remain fixed so enquiry links stay consistent.
+Use the sidebar to edit homepage copy and images, the company story, service descriptions, gallery entries, guides, process steps, FAQs and contact details. Every image field includes an uploader, a picker for bundled photos, and a URL option. Upload JPEG, PNG or WebP images up to 10 MB directly from your device. A successful upload selects the new image and shows a preview; Save draft and Publish to apply it to the website. The six core service names remain fixed so enquiry links stay consistent.
 
 1. Edit a section and select **Save draft**. This writes to the server without changing the public site.
 2. Select **Preview draft** to open the saved draft in a separate tab. Refresh the preview after saving more changes.
@@ -22,7 +22,7 @@ Use the sidebar to edit homepage copy and images, the company story, service des
 
 The overview includes publication timestamps and a content JSON backup download. Browser reload/close warns about unsaved edits. Concurrent saves are rejected rather than silently overwriting another editor's changes.
 
-Content and the salted password hash are stored in the ignored `data/` directory, not in browser local storage. Back up this directory securely; `CMS_DATA_DIR` can point to another persistent directory. Sessions expire after eight hours and are cleared by a server restart. Passwords and session cookies are not returned by the public content API. The contact form still prepares a WhatsApp message; it does not store client enquiries in the CMS.
+Content, uploaded images and the salted password hash are stored in the ignored `data/` directory, not in browser local storage. Back up this whole directory securely, including `uploads/`; `CMS_DATA_DIR` can point to another persistent directory. Sessions expire after eight hours and are cleared by a server restart. Passwords and session cookies are not returned by the public content API. The contact form still prepares a WhatsApp message; it does not store client enquiries in the CMS.
 
 ## Run the built website and CMS
 
@@ -31,6 +31,12 @@ Run `npm run build`, then `npm start`. The Node server serves both the public we
 The previous static hosted preview has not been updated with this backend. A static file deployment alone cannot run this CMS. Production requires a Node host, a persistent disk for `CMS_DATA_DIR`, and an HTTPS reverse proxy. Set `HOST` and `PORT` for the listener. Before binding to a non-local interface, set a strong `CMS_SETUP_TOKEN` on the server, and enter it during first account setup. Use `CMS_SECURE_COOKIE=true` when serving over HTTPS. Keep these settings server-side; never use `VITE_` variables for secrets. This file store is intended for one running server instance, not multiple replicas.
 
 If you lose the admin password, stop the server and securely move `data/admin.json` out of the data directory, then restart locally and create a new account. Retain `data/content.json` to preserve content. Existing sessions are cleared by the restart.
+
+## Properties for sale
+
+The homepage includes a Properties section linked from the header and footer. In `/admin`, choose **Properties for sale** to add, edit, reorder or remove listings. Enter the title, location, asking price with currency, property type, size with units, description and photo description. Upload an actual property photo, choose an existing image or paste a full HTTPS photo URL. Set availability to Available, Reserved or Sold. Sold listings keep their status visible and omit the enquiry button.
+
+Use **Save draft**, **Preview draft**, then **Publish**. Changes remain private until published. Each enquiry opens WhatsApp with the selected property's details. The section starts empty until an admin publishes actual listings. Existing content records receive an empty properties list automatically.
 
 ## Appointment flow
 
@@ -59,3 +65,7 @@ Open `/admin` to manage service header images, image descriptions, fit (`contain
 The admin also includes Gallery playback controls and separate Our Team, Our Partners and Our Clients editors. Team members can be added, reordered, removed and given optional portrait URLs. Page headings, copy, images, information cards and supporting steps are editable. Preview draft opens the relevant company page. Changes follow the existing Save draft / Preview / Publish flow.
 
 Older content records gain defaults for newly added controls when read. Existing saved text, publication timestamps and revisions are retained; no existing content file is rewritten until a save or publish action. Gallery assets from the library carry their image dimensions; custom gallery URLs can specify dimensions to control carousel proportions.
+
+## Image uploads
+
+Uploads require an authenticated admin session and a same-origin request. The server checks image signatures, limits each file to 10 MB and assigns a random filename. Supported formats are JPEG, PNG and WebP; SVG is not accepted. Files are stored in `CMS_DATA_DIR/uploads` (default `data/uploads`) and served through `/uploads/` in development, local preview and the production Node server. They survive rebuilds and server restarts. Uploaded image URLs are public as soon as the upload finishes; the website content only changes after publishing. Unused uploads are retained so replacing or removing an image does not break other content or older drafts. The JSON content backup does not include image files; back up the complete data directory. Restart a running server after installing this upload feature.

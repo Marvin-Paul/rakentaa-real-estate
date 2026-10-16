@@ -1,4 +1,5 @@
 {
+  "properties": [],
   "hero": {
     "eyebrow": "PROPERTY. CONSTRUCTION. DESIGN.",
     "title": "You dream it.",
@@ -12,7 +13,7 @@
     "description": "Rakentaa Real Estate brings architects, quantity surveyors, project managers, valuers and skilled site teams under one roof. From the first sketch to the final coat of paint, we bring your ambitions to life.",
     "secondary": "Whether it is a family home, a commercial development or an existing property portfolio, you have one partner who sees the whole picture.",
     "mission": "To turn your property ambitions into safe, well-designed and durable realities — delivered on time, within budget and to the highest standard of workmanship, anywhere.",
-    "vision": "To be the most trusted name in real estate development and construction management in the region.",
+    "vision": "To lead the region in quality construction and dependable property management, creating well-built spaces and maintaining properties that deliver lasting value for owners, residents and communities.",
     "image": "/images/site-planning.jpeg",
     "imageAlt": "Four professionals in high-visibility vests reviewing drawings on a construction site."
   },
@@ -315,13 +316,13 @@
         },
         {
           "name": "Nakazibwe Patricia",
-          "role": "Operations Manager",
+          "role": "Administrator",
           "initials": "NP"
         },
         {
-          "name": "Ssebulime Douglus",
-          "role": "Site Manager",
-          "initials": "SD"
+          "name": "Mwesigwa Tiffany",
+          "role": "Property Relations Officer / Operations Manager",
+          "initials": "MT"
         }
       ],
       "cards": [
